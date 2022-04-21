@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.1/axios.min.js"></script>
+</head>
+<body>
+    <div id="div1">点我</div>
+
+    <script>
+        div1.onclick = function () {
+            // axios({
+            //     method: 'GET',
+            //     url: 'http://localhost:3000/posts',
+            // }).then(response => {
+            //     console.log(response);
+            // })
+
+            // axios({
+            //     method: 'POST',
+            //     url: 'http://localhost:3000/posts',
+            //     data: {
+            //         title: '很好',
+            //         auther: 'rck'
+            //     }
+            // }).then(response => {
+            //     console.log(response);
+            // })
+
+        //     axios({
+        //         method: 'PUT',
+        //         url: 'http://localhost:3000/posts/3',
+                // data: {
+                //     title: '非常很好',
+                //     auther: 'rck'
+                // }
+        //     }).then(response => {
+        //         console.log(response);
+        //     })
+
+        //     axios({
+        //         method: 'DELETE',
+        //         url: 'http://localhost:3000/posts/3',
+        //     }).then(response => {
+        //         console.log(response);
+            // })
+
+
+            axios.request({
+                method: 'GET',
+                url: 'http://localhost:3000/posts'
+            }).then(response => {
+                console.log(response);
+            })
+
+            axios.post(
+                'http://localhost:3000/posts',
+                {
+                    title: '非常很好',
+                    auther: 'rck'
+                }
+            ).then(response => {
+                console.log(response);
+            })
+        }
+
+        // 响应 成功之后的结果
+        // config 就是配置对象 请求类型、请求 url
+        // data 响应题   json解析，转为了一个 json 对象, 方法我们用
+        // headers 响应头的信息
+        // request: 原生的 AJAX 对象。 当前发送请求创建的 ajax 实例对象
+        // 状态码， 状态结果
+
+
+        // 请求对象 config 配置对象
+        // url: ''
+        // method: ''
+        // baseURL: ''  设置 url 的基础结构 基地址   会做一个拼接
+        // transformRequest:  做请求一个处理
+        // transformResonse  对响应结果做一个处理
+        // headers: 对请求头进行添加
+        // params: 设置 url 参数   a=100&b=200 是一个对象   params: {xx: 13}  /post?a=100&b=200   
+        // paramsSerializer:  对请求的参数进行序列化   /post/a/100b/200  /post/a.100/b.200
+        // auth: 对请求验证 
+        // respnseType: 'json'  格式 服务器会
+        // resonseEncoding: 'utf8'   响应结果编码
+        // xsrfCookieName: 'XSRF-TOKEN'   跨站请求标识, 对 cookie 名设置
+        // xsrfHeaderName: 'X-XSRF-TOKEN'  对头设置   结合服务器（返回唯一标识)。 
+        // onUploadProgress: function () {}   上传回调
+        // onDownloadProgress: function () {}  下载回调
+        // proxy 代理
+        // cancelToken: 取消的设置
+
+
+
+        // 默认配置
+        axios.defaults.method = 'GET';  // 默认的请求类型
+        axios.defaults.baseURL = 'http://localhost:3000';  // 基础 URL
+        axios.defaults.timeout = 3000;
+
+
+        // 创建实例对象
+        const duznzi = axios.create({
+            baseURL: '',
+            timeout: 2000
+        });
+        // duzaniz 的功能与 axios 对象的功能几乎是一样的。
+        console.log(duznzi);  // 函数
+        // 如果有多个服务器，就可以进行创建多个实例
+        
+
+
+
+        // 拦截器
+        // 在发送请求之前，借助一些回调做一些处理。 如果有问题，就可以取消
+        
+        // 响应拦截器，提前做一些处理，数据格式化, 在教给我们的回调
+        axios.interceptors.request.use((config) => {
+            console.log('成功');
+            config.params = {a: 100};
+            throw '错误了';
+        }, (error) => {
+            console.log('请求拦截器 失败');
+        })
+        
+        axios.interceptors.response.use((resonse) => {
+            console.log('响应成功');
+        }, (error) => {
+            console.log('响应拦截器失败');
+            return Promise.reject(error);
+        })
+        
+
+
+        let cancel = null;
+        div1.onclick = function () {
+            // 检测上一次请求是否完成
+            if (cancel !== null) {
+                cancel();  // 取消上一次的请求
+            }
+            axios({
+                method: 'GET',
+                url: 'http://localhost:3000/posts',
+                cancelToken: new axios.CancelToken(function (c) {
+                    // 3. 将 c 
+                    cancel = c;
+                })
+            }).then(response => {
+                console.log(response);
+                cancel = null;
+            })
+        }
+
+        cancel();
+        
+    </script>
+</body>
+</html>
